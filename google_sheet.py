@@ -5,18 +5,13 @@ from googleapiclient.discovery import build
 from google_auth_oauthlib.flow import InstalledAppFlow
 from google.auth.transport.requests import Request
 
+import Discord_Bot.discord_config as cfg
+
 # If modifying these scopes, delete the file token.pickle.
 SCOPES = ['https://www.googleapis.com/auth/spreadsheets.readonly']
 
-# The ID and range of a sample spreadsheet.
-SAMPLE_SPREADSHEET_ID = '1XrDVjvpsRsCMRwoelZAyqkuaVqS0z2S9Zz-bnsE_J5o'
-
 
 def authenticate(Range):
-    """Shows basic usage of the Sheets API.
-        Prints values from a sample spreadsheet.
-        """
-
     creds = None
     # The file token.pickle stores the user's access and refresh tokens, and is
     # created automatically when the authorization flow completes for the first
@@ -40,7 +35,7 @@ def authenticate(Range):
 
     # Call the Sheets API
     sheet = service.spreadsheets()
-    result = sheet.values().get(spreadsheetId=SAMPLE_SPREADSHEET_ID,
+    result = sheet.values().get(spreadsheetId=cfg.google_api["SHEET ID"],
                                 range=Range).execute()
     return result
 
@@ -65,8 +60,8 @@ def icy_epi_test():
     return title, table
 
 
-def kunlun_deco(RANGE):
-    result = authenticate(RANGE)
+def kunlun_deco(range_sheet):
+    result = authenticate(range_sheet)
 
     values = result.get('values', [])
     table = ""
@@ -79,11 +74,3 @@ def kunlun_deco(RANGE):
     note = "NOTE: Feather of Pheonix, Horn of Sacred Blue Dragon, Shell of Sacred Black Tortoise" \
            " or Skin of Silver Tiger will influence the looks of the deco."
     return table, note
-
-
-def main():
-    icy_epi_test()
-
-
-if __name__ == '__main__':
-    main()
