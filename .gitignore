@@ -49,3 +49,5 @@ Temporary Items
 
 # Self added
 *config.py
+credentials.json
+*.pyc

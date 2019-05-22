@@ -8,11 +8,11 @@ import re
 from datetime import datetime
 import time
 
-import Discord_Bot.discor_config as cfg
+import Discord_Bot.discord_config as cfg
 
 from Discord_Bot.google_sheet import *
 
-bot = commands.Bot(command_prefix='!!', description='A bot that greets the user back.')
+bot = commands.Bot(command_prefix=cfg.bot["Prefix"], description=cfg.bot["Description"])
 client = discord.Client()
 
 class Slapper(commands.Converter):
@@ -93,7 +93,7 @@ async def newsFeed_background_task():
 
     while not bot.is_closed():
         NewsFeed = feedparser.parse("http://forums.playredfox.com/index.php?forums/announcements.11/index.rss")
-        channel = bot.get_channel(cfg.bot["NewsFeed Channel ID"])
+        channel = bot.get_channel(int(cfg.bot["NewsFeed Channel ID"]))
         h = html2text.HTML2Text()
         h.ignore_links = False
 
@@ -126,9 +126,8 @@ async def newsFeed_background_task():
                 d1 = datetime.strptime(date_from_file, "%Y-%m-%d %H:%M:%S")
                 if datetime.fromtimestamp(time.mktime(entry.published_parsed[:8] + (-1,))) > d1:
                     file_obj.write(str(time_1))
-                    if "summary" in entry.keys():
-                        text = h.handle(re.sub(r'<a href(.+?)</a>', "", entry.summary.split("<br />", 1)[1]))
-                        await channel.send(f"{entry.link}\n\n")
+                    text = f"News from : {time_1}"
+                    await channel.send(f"{text}\n{entry.link}\n")
                 else:
                     file_obj.write(str(d1))
             file_obj.close()
