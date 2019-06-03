@@ -11,7 +11,7 @@ import Discord_Bot.discord_config as cfg
 SCOPES = ['https://www.googleapis.com/auth/spreadsheets.readonly']
 
 
-def authenticate(Range):
+def authenticate():
     creds = None
     # The file token.pickle stores the user's access and refresh tokens, and is
     # created automatically when the authorization flow completes for the first
@@ -35,33 +35,32 @@ def authenticate(Range):
 
     # Call the Sheets API
     sheet = service.spreadsheets()
-    result = sheet.values().get(spreadsheetId=cfg.google_api["SHEET ID"],
-                                range=Range).execute()
-    return result
+    #result = sheet.values().get(spreadsheetId=cfg.google_api["SHEET ID"],
+    #                            range=Range).execute()
+    return sheet
 
 
-def icy_epi_test():
-    result = authenticate('Summary!H3:K10')
-
-    values = result.get('values', [])
-    table = ""
-    if not values:
-        print('No data found.')
-    else:
-        print('Values:')
-        for row in values:
-            if "total" not in row[0].lower():
-                table += "{0:50}|{1:^5}|{2:^5}|{3:^8} \n".format(row[0], row[1], row[2], row[3])
-            else:
-                title = "Nuria's love potion {0} completed.".format(row[3])
-                table += "{0:62}|{1:^8}".format(row[0], row[3])
-
-    print(table)
-    return title, table
+# def icy_epi_test():
+#     result = authenticate().values().get(spreadsheetId=cfg.google_api["SHEET ID"], range='Summary!H3:K10').execute()
+#     values = result.get('values', [])
+#     table = ""
+#     if not values:
+#         print('No data found.')
+#     else:
+#         print('Values:')
+#         for row in values:
+#             if "total" not in row[0].lower():
+#                 table += "{0:50}|{1:^5}|{2:^5}|{3:^8} \n".format(row[0], row[1], row[2], row[3])
+#             else:
+#                 title = "Nuria's love potion {0} completed.".format(row[3])
+#                 table += "{0:62}|{1:^8}".format(row[0], row[3])
+#
+#     print(table)
+#     return title, table
 
 
 def kunlun_deco(range_sheet):
-    result = authenticate(range_sheet)
+    result = authenticate().values().get(spreadsheetId=cfg.google_api["SHEET ID"], range=range_sheet).execute()
 
     values = result.get('values', [])
     table = ""
@@ -74,3 +73,25 @@ def kunlun_deco(range_sheet):
     note = "NOTE: Feather of Pheonix, Horn of Sacred Blue Dragon, Shell of Sacred Black Tortoise" \
            " or Skin of Silver Tiger will influence the looks of the deco."
     return table, note
+
+def book_request(range_sheet, data):
+    result = authenticate()
+    values = [
+        [
+            data
+        ],
+        # Additional rows ...
+    ]
+    body = {
+        'values': values
+    }
+    result = authenticate().values().get(spreadsheetId=cfg.google_api["SHEET ID"], range='Summary!H3:K10').execute()
+    result = authenticate().values().update(spreadsheetId=cfg.google_api["SHEET ID"],
+                                            range=range_sheet,
+                                            valueInputOption="RAW", body=body).execute()
+    print('{0} cells updated.'.format(result.get('updatedCells')))
+
+
+
+
+    print("BOOK")

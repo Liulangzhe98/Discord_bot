@@ -8,7 +8,8 @@ import re
 from datetime import datetime
 import time
 
-from Discord_Bot.google_sheet import *
+import Discord_Bot.discord_config as cfg
+from Discord_Bot.google_sheets import *
 
 bot = commands.Bot(command_prefix=cfg.bot["Prefix"], description=cfg.bot["Description"])
 client = discord.Client()
@@ -62,6 +63,43 @@ async def KunlunDeco(ctx, a: int):
     else:
         await ctx.send(f"{title}\n```\n{table}\n```")
 
+@bot.command()
+async def Book_Request(ctx, *, args):
+    # Textual day, month and year
+    date = datetime.today().strftime("%d %B, %Y")
+
+    name = args.split(" ")[0]
+    clan = args.split(" ")[1]
+    group = args.split(" ")[2]
+    cheng = args[-3:]
+    book = " ".join(args.split(" ")[3:][:len(cheng)+1])
+
+    #Check if filled in correctly
+    if clan in ["Wu-Tang", "Beggar", "Shaolin"]:
+        if group in ["Warrior", "Healer", "Hybrid", "CK"]:
+            if len(book) != 0:
+                if "C1" in cheng:
+                    request_list = [date, name, clan, group, book, cheng]
+                    book_request(request_list)
+                    print(f"{request_list}")
+                else:
+                    print("WRONG LEVEL")
+            else:
+                print("YOU FORGOT YOUR BOOK")
+        else:
+            print("Use the right version of the classes")
+    else:
+        print("WRONG CLAN")\
+
+@bot.command()
+async def book_viewer(ctx):
+    book_table = book_list_viewer()
+    await ctx.send(f"```\n{book_table}```")
+
+@bot.command()
+async def book_remover(ctx, index: int):
+    book_remover_func(index)
+    await ctx.send("Your book request has been deleted from the request list.")
 
 @bot.command()
 async def slap(ctx, *, reason: Slapper):

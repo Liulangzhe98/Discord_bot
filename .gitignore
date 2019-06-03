@@ -50,6 +50,8 @@ Temporary Items
 # Self added
 *config.py
 credentials.json
+creds_2.json
 *.pyc
-token.pic
+token.pickle
+StoredNews
 RSS-feed
