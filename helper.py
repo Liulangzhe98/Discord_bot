@@ -3,7 +3,7 @@ def refine_rate(options_list):
     for opt in options_list:
         bonus += opt
     bonus = bonus / 100
-    rate = [100, 100, 95, 90, 80, 70, 50, 45, 30, 20, 15, 1, 25, 15, 1]
+    rate = [100, 100, 95, 90, 80, 70, 60, 50, 40, 25, 20, 3, 25, 7, 3]
     rate = [i * bonus for i in rate]
     for idx, item in enumerate(rate):
         if item > 100:

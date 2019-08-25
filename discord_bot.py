@@ -1,6 +1,7 @@
 import asyncio
 import discord
 from discord.ext import commands
+from itertools import zip_longest
 import random
 import feedparser
 import html2text
@@ -21,6 +22,7 @@ async def on_ready():
     print('Logged in as')
     print(bot.user.name)
     print(bot.user.id)
+    print(bot.guilds)
     print('------')
 
 
@@ -60,33 +62,76 @@ async def book_request(ctx, *, args):
     book = " ".join(args.split(" ")[3:][:len(cheng) + 1])
 
     # Check if filled in correctly
-    if clan in ["Wu-Tang", "Beggar", "Shaolin"]:
-        if group in ["Warrior", "Healer", "Hybrid", "CK"]:
+    if clan in ["Wu-tang", "Beggar", "Shaolin"]:
+        if group in ["Warrior", "Healer", "Hybrid", "Ck"]:
             if len(book) != 0:
                 if "C1" in cheng:
                     request_list = [date, name, clan, group, book, cheng]
                     book_request_func(request_list)
-                    await ctx.send("Your book request has been added from the request list.")
+                    await ctx.send("Your book request has been added to the request list.")
+    #             else:
+    #                 print("WRONG LEVEL")
+    #         else:
+    #             print("YOU FORGOT YOUR BOOK")
+    #     else:
+    #         print("Use the right version of the classes")
+    # else:
+    #     print("WRONG CLAN")
+
+@bot.command()
+async def book_requests(ctx, *, args):
+    # Textual day, month and year
+    date = datetime.today().strftime("%d %B, %Y")
+    role_id = ""
+    for guild in bot.guilds:
+        if guild.name == "Enlightened" or guild.name == "Test_Server":
+            for role in guild.roles:
+                if role.name == "Library":
+                    role_id = role
+
+    if "library" in [y.name.lower() for y in ctx.author.roles]:
+        re_use_str = args.split("|")[0].strip()
+        books = args.split("|")[1]
+        print(books)
+        length = len(books.split(","))
+        for book in books.split(","):
+            book = book.strip().lower()
+            name = re_use_str.split(",")[0].strip()
+            clan = re_use_str.split(",")[1].strip().capitalize()
+            group = re_use_str.split(",")[2].strip().capitalize()
+            cheng = book[book.find("c1"):].capitalize()
+            book = book.split(cheng)[0]
+            print(book)
+            print(name, clan, group, cheng)
+            # Check if filled in correctly
+            if clan in ["Wu-tang", "Beggar", "Shaolin"]:
+                if group in ["Warrior", "Healer", "Hybrid", "Ck"]:
+                    request_list = [date, name, clan, group, book, cheng]
+                    book_request_func(request_list)
+                    length -= 1
                 else:
-                    print("WRONG LEVEL")
+                    print("Use the right version of the classes")
             else:
-                print("YOU FORGOT YOUR BOOK")
-        else:
-            print("Use the right version of the classes")
+                print("WRONG CLAN")
+        if length == 0:
+            await ctx.send("Your book requests have been added to the request list.")
     else:
-        print("WRONG CLAN") \
- \
- \
+        await ctx.send(f"You are not allowed to use this command. Ask {role_id.mention}")
+
 @bot.command()
 async def book_viewer(ctx):
     book_table = book_list_viewer()
-    await ctx.send(f"```\n{book_table}```")
+    if len(book_table) > 2000:
+        for item in zip_longest(*[iter(book_table.split("\n"))] * 10, fillvalue=''):
+            lines = "\n".join(item).strip()
+            await ctx.send(f"```\n{lines}```")
+    else:
+        await ctx.send(f"```\n{book_table}```")
 
 
 @bot.command()
 async def book_remover(ctx, *, args):
     index = list(map(int, args.split(" ")))
-    print(index)
     book = book_remover_func(index)
     if len(index) != 1:
         plural = "entries have "
@@ -112,30 +157,21 @@ async def refine(ctx):
 
 @bot.command()
 async def refine_rates(ctx, input_opt: str):
-    print(input_opt, len(input_opt))
     rates = input_opt[1:-1]
-    print(rates)
     rates_list = rates.split(",")
     rates_list = list(map(int, rates_list))
-
-    if (len(rates_list) != 5):
+    if len(rates_list) != 5:
         await ctx.send("You didn't specify the right amount of options. Please check the example with !!Refine")
     else:
         await ctx.send(f"```With the give options the rates will be like this:\n{refine_rate(rates_list)}```")
-
-
 
 bot.remove_command('help')
 
 
 @bot.command()
 async def help(ctx):
-    embed = discord.Embed(title="9Dragons Bot", description="The list of services, commands and their uses:",
+    embed = discord.Embed(title="9Dragons Bot", description="The list of commands and their uses:",
                           color=0xeee657)
-    embed.add_field(name="SERVICES:", value="\u200b", inline=False)
-
-    embed.add_field(name="Newsfeed", value="This service will check for news updates on the Redfox Forum and send "
-                                           "them to the <#Newsfeed> channel.\u200b")
     embed.add_field(name="COMMANDS:", value="--------------------", inline=False)
     embed.add_field(name="help", value="Gives this message", inline=False)
     embed.add_field(name="LovePotion <argument>", value="<argument> can be [%, Total]. It shows the progress for "
@@ -147,13 +183,9 @@ async def help(ctx):
     embed.add_field(name="book_viewer", value="This command will show all the requested books.")
     embed.add_field(name="book_remover", value="TEMP")
 
-    space = ""
 
     # Code block style
-    code_block = "```\nSERVICES\n"
-    code_block += "NewsFeed | This service will check for news updates on the Redfox Forum and send them to the \n" \
-                  "           <#Newsfeed> channel.\n\n"
-    code_block += "COMMANDS\n"
+    code_block = "COMMANDS\n"
     code_block += "\t ------- General -------\n"
     code_block += "refine                 | For more information about the refining command.. \n"
     code_block += "love_potion <argument> | <argument> can be [%, Total]. \n" \
@@ -175,37 +207,4 @@ async def help(ctx):
     await ctx.send(code_block)
     # await ctx.send(embed=embed)
 
-
-# async def newsFeed_background_task():
-#     await bot.wait_until_ready()
-#
-#     while not bot.is_closed():
-#         news_feed = feedparser.parse("http://forums.playredfox.com/index.php?forums/announcements.11/index.rss")
-#         channel = bot.get_channel(int(cfg.bot["NewsFeed Channel ID"]))
-#         h = html2text.HTML2Text()
-#         h.ignore_links = False
-#
-#         for entry in reversed(news_feed.entries[0:5]):
-#             file_obj = open("StoredNews", "r")
-#
-#             time_1 = datetime.fromtimestamp(time.mktime(entry.published_parsed[:8] + (-1,)))
-#             date_from_file = file_obj.readline()
-#             file_obj.close()
-#             file_obj = open("StoredNews", "w")
-#             if date_from_file == "":
-#                 file_obj.write(str(time_1))
-#                 text = f"News from : {time_1}"
-#                 await channel.send(f"{text}\n{entry.link}\n")
-#             else:
-#                 d1 = datetime.strptime(date_from_file, "%Y-%m-%d %H:%M:%S")
-#                 if datetime.fromtimestamp(time.mktime(entry.published_parsed[:8] + (-1,))) > d1:
-#                     file_obj.write(str(time_1))
-#                     text = f"News from : {time_1}"
-#                     await channel.send(f"{text}\n{entry.link}\n")
-#                 else:
-#                     file_obj.write(str(d1))
-#             file_obj.close()
-#         await asyncio.sleep(3600)
-
-# bot.loop.create_task(newsFeed_background_task())
 bot.run(cfg.bot["Token"])
