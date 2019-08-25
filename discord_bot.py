@@ -2,12 +2,8 @@ import asyncio
 import discord
 from discord.ext import commands
 from itertools import zip_longest
-import random
-import feedparser
-import html2text
-import re
 from datetime import datetime
-import time
+
 
 import Discord_Bot.discord_config as cfg
 from Discord_Bot.google_sheets import *
