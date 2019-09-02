@@ -46,12 +46,12 @@ def icy_epi_test():
             if "total" not in row[0].lower():
                 table += "{0:50}|{1:^5}|{2:^5}|{3:^8} \n".format(row[0], row[1], row[2], row[3])
             else:
-                title = "Nuria's love potion {0} completed.".format(row[3])
+                title = "The love potion is done for {0}.".format(row[3])
                 table += "{0:62}|{1:^8}".format(row[0], row[3])
     return title, table
 
 
-def kunlun_deco(table_selection):
+def kunlun_deco_gs(table_selection):
     sheet_name = re.split('[!]', table_selection)[0]
     sheet_range = re.split('[!]', table_selection)[1]
 
