@@ -23,6 +23,10 @@ async def on_ready():
 
 
 @bot.command()
+async def meow(ctx):
+    await ctx.send("YOU ARE PART OF THE MEOW CREW!!!\nhttps://media.giphy.com/media/yXPquATCb8kGk/giphy.gif")
+
+@bot.command()
 async def love_potion(ctx, a: str):
     if a == "%":
         title, table = icy_epi_test()
