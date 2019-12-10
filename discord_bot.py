@@ -18,13 +18,15 @@ async def on_ready():
     print(bot.guilds)
     print('------')
     prefix = cfg.bot["Prefix"]
-    game = discord.Game(f"Version 1.0 | Use {prefix}help")
+    game = discord.Game(f"Version 1.1 | Use {prefix}help")
     await bot.change_presence(activity=game)
+
 
 
 @bot.command()
 async def meow(ctx):
     await ctx.send("YOU ARE PART OF THE MEOW CREW!!!\nhttps://media.giphy.com/media/yXPquATCb8kGk/giphy.gif")
+
 
 @bot.command()
 async def love_potion(ctx, a: str):
@@ -177,6 +179,24 @@ async def refine_rates(ctx, input_opt: str):
     else:
         await ctx.send(f"```With the give options the rates will be like this:\n{refine_rate(rates_list)}```")
 
+
+@bot.command()
+async def guides(ctx):
+    links = ["http://9djourney.blogspot.com/2019/11/class-balancing-wu-tang-hybrid-new.html",
+             "http://9djourney.blogspot.com/2018/09/class-balancing-beggar-healer-new.html",
+             "http://9djourney.blogspot.com/2019/11/advanced-guide-to-remaster-game-for-old.html"
+             ]
+    text = ["Hybrid class guide",
+            "Healer class guide",
+            "Advanced guide for returning and new players"]
+    output = ""
+
+    embed = discord.Embed(title="Sedbona's guides", color=0x00ff00)
+    for i in range(0, len(links)):
+        embed.add_field(name=text[i], value="<" + links[i] + ">", inline=False)
+    await ctx.send(embed=embed)
+
+
 bot.remove_command('help')
 
 
@@ -188,9 +208,10 @@ async def help(ctx):
                 f"Use {prefix} in combination with these commands\n"\
                  "COMMANDS\n"
     code_block += "\t ------- General -------\n"
-    code_block += "refine                 | For more information about the refining command.\n"
-    code_block += "love_potion <argument> | <argument> can be [%, Total]. \n" \
-                  "                       | It shows the progress for the Love epithet.\n"
+    # code_block += "refine                 | For more information about the refining command.\n"
+    # code_block += "love_potion <argument> | <argument> can be [%, Total]. \n" \
+    #               "                       | It shows the progress for the Love epithet.\n"
+    code_block += "guides                 | This will give a list with usefull guides from Sedbona\n"
     code_block += "kunlun_deco <argument> | <argument> can be [0, 1, 2, 3, 4].\n" \
                   "                       | It will show the cost to make a Kunlun deco.\n" \
                   "                       | Choosing 0 will give the total cost to make a level 4 deco.\n"
